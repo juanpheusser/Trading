@@ -120,9 +120,9 @@ class DataGui:
         RSI_plot3 = st.sidebar.checkbox(''.join(['Plot RSI of ', ticker3]), value=True, key='3')
         data_type = st.sidebar.selectbox('Select Type of Data', ('Intraday', 'End of Day'))
         if data_type == 'Intraday':
-            price = st.sidebar.selectbox('Select Price to View', ('open', 'high', 'low', 'close', 'last'), value='last')
+            price = st.sidebar.selectbox('Select Price to View', ('open', 'high', 'low', 'close', 'last'), index=4)
         else:
-            price = st.sidebar.selectbox('Select Price to View', ('open', 'high', 'low', 'close'), value='close')
+            price = st.sidebar.selectbox('Select Price to View', ('open', 'high', 'low', 'close'), index=3)
         line = st.sidebar.checkbox('Show Line Plot', value=True, key='4')
         candle = st.sidebar.checkbox('Show Candle Plot', value=True, key='5')
         vol = st.sidebar.checkbox('Show Volume Plot', value=True, key='6')
