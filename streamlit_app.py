@@ -92,8 +92,8 @@ class DataGui:
                 dDown = -1*delta.clip(upper=0)
 
                 if method == 'Linear':
-                    rolUp = pd.rolling_mean(dUp, RSI_Length)
-                    rolDown = pd.rolling_mean(dDown, RSI_Length)
+                    rolUp = dUp.rolling(window=RSI_Length).mean()
+                    rolDown = dDown.rolling(window=RSI_Length).mean()
 
                 else:
                     rolUp = dUp.ewm(com=RSI_Length, adjust=False).mean()
