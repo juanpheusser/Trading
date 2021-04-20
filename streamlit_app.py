@@ -38,7 +38,7 @@ class DataGui:
         return option
 
     def RSI_Dashboard(self):
-        def plot_candle_line_volume(dataframe, ticker):
+        def plot_candle_line_volume(dataframe, ticker, line, candle, vol):
             line_trace = go.Scatter(x=dataframe.index, y=dataframe[price],
                                     name=' '.join([price.capitalize(), 'Price Line']))
             candle_trace = go.Candlestick(x=dataframe.index,
@@ -49,15 +49,18 @@ class DataGui:
                                           name='OHLC Prices')
             fig = make_subplots(specs=[[{'secondary_y': True}]])
             volume_trace = go.Bar(x=dataframe.index, y=dataframe.volume, name='Volume', opacity=0.15, marker_color='#00CC96')
-            fig.add_trace(line_trace, secondary_y=True)
-            fig.add_trace(candle_trace, secondary_y=True)
-            fig.add_trace(volume_trace, secondary_y=False)
+            if line:
+                fig.add_trace(line_trace, secondary_y=True)
+            if candle:
+                fig.add_trace(candle_trace, secondary_y=True)
+            if vol:
+                fig.add_trace(volume_trace, secondary_y=False)
             fig.update_layout(title=price.capitalize() + ' Price Line Plot: ' + ticker,
                               xaxis_title='Date - Time',
-                              yaxis_title= price.capitalize() + ' Price USD',
+                              yaxis_title='Volume',
                               yaxis=dict(side='left'),
                               yaxis2=dict(side='right',
-                                          title_text='Volume'))
+                                          title_text=price.capitalize() + ' Price USD'))
             fig['layout'].update(height=600, width=1000)
 
 
@@ -117,32 +120,35 @@ class DataGui:
         RSI_plot3 = st.sidebar.checkbox(''.join(['Plot RSI of ', ticker3]), value=True, key='3')
         data_type = st.sidebar.selectbox('Select Type of Data', ('Intraday', 'End of Day'))
         if data_type == 'Intraday':
-            price = st.sidebar.selectbox('Select Price to View', ('open', 'high', 'low', 'close', 'last'))
+            price = st.sidebar.selectbox('Select Price to View', ('open', 'high', 'low', 'close', 'last'), value='last')
         else:
-            price = st.sidebar.selectbox('Select Price to View', ('open', 'high', 'low', 'close'))
+            price = st.sidebar.selectbox('Select Price to View', ('open', 'high', 'low', 'close'), value='close')
+        line = st.sidebar.checkbox('Show Line Plot', value=True, key='4')
+        candle = st.sidebar.checkbox('Show Candle Plot', value=True, key='5')
+        vol = st.sidebar.checkbox('Show Volume Plot', value=True, key='6')
         RSI_Length = st.sidebar.number_input('Input RSI Sample Periods', min_value=5, max_value=99, value=9)
         RSI_Method = st.sidebar.selectbox('Select RSI Method', ('Linear', 'Exponential'))
         RSI_Method = RSI_Method.lower()
 
         if data_type == 'Intraday':
             dataframe1 = self.engine.dict_of_stocks[ticker1].stock_data_dataframe_intraday
-            plot_candle_line_volume(dataframe1, ticker1)
+            plot_candle_line_volume(dataframe1, ticker1, line, candle, vol)
 
             dataframe2 = self.engine.dict_of_stocks[ticker2].stock_data_dataframe_intraday
-            plot_candle_line_volume(dataframe2, ticker2)
+            plot_candle_line_volume(dataframe2, ticker2, line, candle, vol)
 
             dataframe3 = self.engine.dict_of_stocks[ticker3].stock_data_dataframe_intraday
-            plot_candle_line_volume(dataframe3, ticker3)
+            plot_candle_line_volume(dataframe3, ticker3, line, candle, vol)
 
         else:
             dataframe1 = self.engine.dict_of_stocks[ticker1].stock_data_dataframe_eod
-            plot_candle_line_volume(dataframe1, ticker1)
+            plot_candle_line_volume(dataframe1, ticker1, line, candle, vol)
 
             dataframe2 = self.engine.dict_of_stocks[ticker2].stock_data_dataframe_eod
-            plot_candle_line_volume(dataframe2, ticker2)
+            plot_candle_line_volume(dataframe2, ticker2, line, candle, vol)
 
             dataframe3 = self.engine.dict_of_stocks[ticker3].stock_data_dataframe_eod
-            plot_candle_line_volume(dataframe3, ticker3)
+            plot_candle_line_volume(dataframe3, ticker3, line, candle, vol)
 
 
         fig = make_subplots()
