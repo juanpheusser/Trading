@@ -72,8 +72,8 @@ class DataGui:
                 dDown = -1*delta.clip(upper=0)
 
                 if method == 'linear':
-                    rolUp = pd.rolling_mean(dUp, RSI_Length)
-                    rolDown = pd.rolling_mean(dDown, RSI_Length)
+                    rolUp = dUp.rolling(window=RSI_Length).mean()
+                    rolDown = dDown.rolling(window=RSI_Length).mean()
 
                 elif method == 'exponential':
                     rolUp = dUp.ewm(com=RSI_Length, adjust=False).mean()

@@ -59,6 +59,7 @@ class Stock:
         self.append_low_intraday(data)
         self.append_last_intraday(data)
         self.append_volume_intraday(data)
+        self.stock_data_dataframe_intraday.dropna()
 
     def append_eod_data(self, data):
         self.append_dataframe_eod(data)
