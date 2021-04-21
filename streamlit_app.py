@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import requests
 from Stock_Engine import Engine
-import mplfinance as mpf
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from index import compute_RSI
 
 class DataGui:
     def __init__(self, tickers):
@@ -70,43 +70,17 @@ class DataGui:
 
             if data_type == 'Intraday':
                 price_data = self.engine.dict_of_stocks[ticker].stock_data_dataframe_intraday['last']
-                delta = price_data.diff()
-                dUp = delta.clip(lower=0)
-                dDown = -1*delta.clip(upper=0)
+                RSI = compute_RSI(price_data, method, RSI_Length, tolerance=4)
+                RSI = RSI.dropna()
 
-                if method == 'linear':
-                    rolUp = dUp.rolling(window=RSI_Length).mean()
-                    rolDown = dDown.rolling(window=RSI_Length).mean()
-
-                elif method == 'exponential':
-                    rolUp = dUp.ewm(com=RSI_Length, adjust=False).mean()
-                    rolDown = dDown.ewm(com=RSI_Length, adjust=False).mean()
-
-                RS = rolUp/rolDown
-                RSI = 100 - (100/ (1 + RS))
-                RSI = pd.DataFrame(RSI.dropna())
-
-                return go.Scatter(x=RSI.index, y=RSI['last'], name=ticker)
+                return go.Scatter(x=RSI.index, y=RSI, name=ticker)
 
             elif data_type == 'End of Day':
                 price_data = self.engine.dict_of_stocks[ticker].stock_data_dataframe_eod['close']
-                delta = price_data.diff()
-                dUp = delta.clip(lower=0)
-                dDown = -1*delta.clip(upper=0)
+                RSI = compute_RSI(price_data, method, RSI_Length, tolerance=4)
+                RSI = RSI.dropna()
 
-                if method == 'Linear':
-                    rolUp = dUp.rolling(window=RSI_Length).mean()
-                    rolDown = dDown.rolling(window=RSI_Length).mean()
-
-                else:
-                    rolUp = dUp.ewm(com=RSI_Length, adjust=False).mean()
-                    rolDown = dDown.ewm(com=RSI_Length, adjust=False).mean()
-
-                RS = rolUp / rolDown
-                RSI = 100 - (100 / (1 + RS))
-                RSI = pd.DataFrame(RSI.dropna())
-
-                return go.Scatter(x=RSI.index, y=RSI['close'], name=ticker)
+                return go.Scatter(x=RSI.index, y=RSI, name=ticker)
 
 
 
