@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 def compute_RSI(vector: pd.Series, method, RSI_Length, tolerance)->pd.Series:
 
     method = method.lower()
+    vector = vector.sort_index(ascending=True)
 
     diff = vector.diff()
     dUp = diff.clip(lower=0)
